@@ -85,29 +85,6 @@ public class InventoryService {
         }
     }
 
-    // 2b. Update Quantity (Legacy)
-    public String updateProductQuantity(String idStr, String quantityStr) {
-        try {
-            if (idStr == null || idStr.trim().isEmpty())
-                return "Error: Product ID is required.";
-            if (quantityStr == null || quantityStr.trim().isEmpty())
-                return "Error: Quantity is required.";
-
-            int id = Integer.parseInt(idStr);
-            int quantity = Integer.parseInt(quantityStr);
-
-            if (quantity < 0)
-                return "Error: Quantity cannot be negative.";
-
-            productDAO.updateProductQuantity(id, quantity);
-            return "Success: Quantity updated!";
-        } catch (NumberFormatException e) {
-            return "Error: ID and Quantity must be valid numbers.";
-        } catch (Exception e) {
-            return "Error: " + e.getMessage();
-        }
-    }
-
     // 3. Delete Product
     public String deleteProduct(String idStr) {
         try {

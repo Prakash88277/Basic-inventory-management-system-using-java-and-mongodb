@@ -47,22 +47,6 @@ public class ProductDAO {
         System.out.println("✅ Updated Product ID " + product.getProductId());
     }
 
-    // 2b. Update Product Quantity (Legacy support)
-    public void updateProductQuantity(int productId, int quantity) throws Exception {
-        if (quantity < 0) {
-            throw new Exception("Quantity cannot be negative.");
-        }
-
-        UpdateResult result = collection.updateOne(
-                Filters.eq("_id", productId),
-                Updates.set("quantity", quantity));
-
-        if (result.getMatchedCount() == 0) {
-            throw new Exception("Product with ID " + productId + " not found.");
-        }
-        System.out.println("✅ Updated quantity for Product ID " + productId);
-    }
-
     // 3. Delete Product
     public void deleteProduct(int productId) throws Exception {
         DeleteResult result = collection.deleteOne(Filters.eq("_id", productId));
@@ -104,9 +88,4 @@ public class ProductDAO {
         return productList;
     }
 
-    // Helper to clear collection for testing
-    public void clearAll() {
-        collection.deleteMany(new Document());
-        System.out.println("⚠️ All products cleared from database.");
-    }
 }
