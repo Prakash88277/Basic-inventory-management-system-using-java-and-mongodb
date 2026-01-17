@@ -1,0 +1,95 @@
+package service;
+
+import dao.ProductDAO;
+import model.Product;
+import java.util.List;
+
+public class InventoryService {
+    private ProductDAO productDAO;
+
+    public InventoryService() {
+        this.productDAO = new ProductDAO();
+    }
+
+    // 1. Add Product with Validation
+    public String addProduct(String idStr, String name, String quantityStr, String priceStr) {
+        try {
+            // Basic Validation
+            if (name == null || name.trim().isEmpty()) {
+                return "Error: Product Name cannot be empty.";
+            }
+            if (idStr == null || idStr.trim().isEmpty())
+                return "Error: Product ID is required.";
+            if (quantityStr == null || quantityStr.trim().isEmpty())
+                return "Error: Quantity is required.";
+            if (priceStr == null || priceStr.trim().isEmpty())
+                return "Error: Price is required.";
+
+            // Parsing
+            int id = Integer.parseInt(idStr);
+            int quantity = Integer.parseInt(quantityStr);
+            double price = Double.parseDouble(priceStr);
+
+            // Logic Validation
+            if (id <= 0)
+                return "Error: Product ID must be positive.";
+            if (quantity < 0)
+                return "Error: Quantity cannot be negative.";
+            if (price < 0)
+                return "Error: Price cannot be negative.";
+
+            Product product = new Product(id, name, quantity, price);
+            productDAO.addProduct(product);
+
+            return "Success: Product added successfully!";
+        } catch (NumberFormatException e) {
+            return "Error: ID, Quantity, and Price must be valid numbers.";
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
+    }
+
+    // 2. Update Quantity
+    public String updateProductQuantity(String idStr, String quantityStr) {
+        try {
+            if (idStr == null || idStr.trim().isEmpty())
+                return "Error: Product ID is required.";
+            if (quantityStr == null || quantityStr.trim().isEmpty())
+                return "Error: Quantity is required.";
+
+            int id = Integer.parseInt(idStr);
+            int quantity = Integer.parseInt(quantityStr);
+
+            if (quantity < 0)
+                return "Error: Quantity cannot be negative.";
+
+            productDAO.updateProductQuantity(id, quantity);
+            return "Success: Quantity updated!";
+        } catch (NumberFormatException e) {
+            return "Error: ID and Quantity must be valid numbers.";
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
+    }
+
+    // 3. Delete Product
+    public String deleteProduct(String idStr) {
+        try {
+            if (idStr == null || idStr.trim().isEmpty())
+                return "Error: Product ID is required.";
+
+            int id = Integer.parseInt(idStr);
+            productDAO.deleteProduct(id);
+            return "Success: Product deleted!";
+        } catch (NumberFormatException e) {
+            return "Error: Product ID must be a number.";
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
+    }
+
+    // 4. Get All Products
+    public List<Product> getAllProducts() {
+        return productDAO.getAllProducts();
+    }
+}
