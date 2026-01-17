@@ -51,7 +51,7 @@ public class MainFrame extends JFrame {
         // --- Middle Panel: Buttons ---
         JPanel buttonPanel = new JPanel(new FlowLayout());
         btnAdd = new JButton("Add Product");
-        btnUpdate = new JButton("Update Quantity");
+        btnUpdate = new JButton("Update Product");
         btnDelete = new JButton("Delete Product");
         btnView = new JButton("View All Products");
 
@@ -96,10 +96,13 @@ public class MainFrame extends JFrame {
         });
 
         // 2. Update Quantity
+        // 2. Update Product
         btnUpdate.addActionListener(e -> {
-            String result = service.updateProductQuantity(
+            String result = service.updateProduct(
                     txtId.getText(),
-                    txtQuantity.getText());
+                    txtName.getText(),
+                    txtQuantity.getText(),
+                    txtPrice.getText());
             JOptionPane.showMessageDialog(this, result);
             if (result.startsWith("Success")) {
                 clearFields();

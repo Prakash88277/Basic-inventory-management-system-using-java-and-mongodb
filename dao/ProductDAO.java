@@ -9,6 +9,8 @@ import com.mongodb.client.result.UpdateResult;
 import model.Product;
 import org.bson.Document;
 
+import com.mongodb.client.model.Sorts;
+import org.bson.conversions.Bson;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +32,22 @@ public class ProductDAO {
         System.out.println("✅ Product added: " + product.getName());
     }
 
-    // 2. Update Product Quantity
+    // 2. Update Product (Name, Quantity, Price)
+    public void updateProduct(Product product) throws Exception {
+        UpdateResult result = collection.updateOne(
+                Filters.eq("_id", product.getProductId()),
+                Updates.combine(
+                        Updates.set("name", product.getName()),
+                        Updates.set("quantity", product.getQuantity()),
+                        Updates.set("price", product.getPrice())));
+
+        if (result.getMatchedCount() == 0) {
+            throw new Exception("Product with ID " + product.getProductId() + " not found.");
+        }
+        System.out.println("✅ Updated Product ID " + product.getProductId());
+    }
+
+    // 2b. Update Product Quantity (Legacy support)
     public void updateProductQuantity(int productId, int quantity) throws Exception {
         if (quantity < 0) {
             throw new Exception("Quantity cannot be negative.");
@@ -55,10 +72,33 @@ public class ProductDAO {
         System.out.println("✅ Product deleted: ID " + productId);
     }
 
-    // 4. Get All Products
+    // 2. Update Product (Dynamic/Partial Update)
+    public void updateProductDynamic(int id, String name, Integer quantity, Double price) throws Exception {
+        List<Bson> updates = new ArrayList<>();
+        if (name != null)
+            updates.add(Updates.set("name", name));
+        if (quantity != null)
+            updates.add(Updates.set("quantity", quantity));
+        if (price != null)
+            updates.add(Updates.set("price", price));
+
+        if (updates.isEmpty())
+            return; // Nothing to update
+
+        UpdateResult result = collection.updateOne(
+                Filters.eq("_id", id),
+                Updates.combine(updates));
+
+        if (result.getMatchedCount() == 0) {
+            throw new Exception("Product with ID " + id + " not found.");
+        }
+        System.out.println("✅ Updated Product ID " + id);
+    }
+
+    // 4. Get All Products (Sorted by ID)
     public List<Product> getAllProducts() {
         List<Product> productList = new ArrayList<>();
-        for (Document doc : collection.find()) {
+        for (Document doc : collection.find().sort(Sorts.ascending("_id"))) {
             productList.add(Product.fromDocument(doc));
         }
         return productList;
